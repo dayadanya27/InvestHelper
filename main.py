@@ -18,13 +18,16 @@ def get_prices(security, start, end):
         prices = df['CLOSE'].to_numpy()
     return prices
 
-security = 'LKOH'
+security = 'SBER'
 start_date = '2022-01-01'
 end_date = '2025-12-31'
 
 y_coords = get_prices(security, start_date, end_date)
 sample_size = len(y_coords)
 x_coords = np.linspace(0, sample_size - 1, sample_size)
+
+x_coords_norm = (x_coords - x_coords.min()) / (x_coords.max() - x_coords.min())
+y_coords_norm = (y_coords - y_coords.min()) / (y_coords.max() - y_coords.min())
 
 # Visualisation of the price chart
 
@@ -40,16 +43,16 @@ x_coords = np.linspace(0, sample_size - 1, sample_size)
 
 # Калибровка scales (Здесь я подкручиваю число p в log10(sample_size*p) так, чтобы размерность прямой была как можно ближе к 1)
 
-scales = np.logspace(log10(1), log10(sample_size*0.0015), sample_size)
+scales = np.logspace(log10(0.001), log10(0.55), 17)
 
 # points = np.empty((sample_size, 2))
 # for i in range (sample_size):
-#     points[i] = [i, i^i]
+#     points[i] = [x_coords_norm[i], x_coords_norm[i]]
 # points = points[~np.isnan(points).any(axis=1)]
 
 points = np.empty((sample_size, 2))
 for i in range (sample_size):
-    points[i] = [x_coords[i], y_coords[i]]
+    points[i] = [x_coords_norm[i], y_coords_norm[i]]
 points = points[~np.isnan(points).any(axis=1)]
 
 dim = box_counting(points, scales)['fd']
